@@ -58,16 +58,16 @@ bot.on('message', async (ctx) => {
     return;
   }
 
-  // Check to see if it's a text message
   if (typeof ctx.message.text === 'undefined') {
+    // Check to see if it's a text message
     ctx.reply('Please send a link', Extra.inReplyTo(ctx.message.message_id));
-		return;
+  } else {
+    // Respond with shortened link
+    ctx.reply(
+      await shorten(ctx.message.text),
+      Extra.inReplyTo(ctx.message.message_id)
+    );
   }
-
-  ctx.reply(
-    await shorten(ctx.message.text),
-    Extra.inReplyTo(ctx.message.message_id)
-  ); // Respond with shortened link
 });
 bot.launch();
 
