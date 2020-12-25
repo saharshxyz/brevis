@@ -1,6 +1,7 @@
 const { Telegraf } = require('telegraf');
 const fetch = require('node-fetch');
 const express = require('express');
+const Extra = require('telegraf/extra');
 
 const app = express();
 require('dotenv').config();
@@ -50,16 +51,22 @@ bot.on('message', async (ctx) => {
     ctx.message.from.username !== USERNAME ||
     ctx.message.from.is_Bot === true
   ) {
-    ctx.reply('Not an authorized user');
+    ctx.reply(
+      'Not an authorized user',
+      Extra.inReplyTo(ctx.message.message_id)
+    );
     return;
   }
 
   // Check to see if it's a text message
   if (typeof ctx.message.text === 'undefined') {
-    ctx.reply('Please send a link');
+    ctx.reply('Please send a link', Extra.inReplyTo(ctx.message.message_id));
   }
 
-  ctx.reply(await shorten(ctx.message.text)); // Respond with shortened link
+  ctx.reply(
+    await shorten(ctx.message.text),
+    Extra.inReplyTo(ctx.message.message_id)
+  ); // Respond with shortened link
 });
 bot.launch();
 
