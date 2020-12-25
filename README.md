@@ -1,5 +1,4 @@
-# brevis 
-[![Run on Repl.it](https://repl.it/badge/github/saharshxyz/brevis)](https://repl.it/github/saharshxyz/brevis)
+# brevis [![Run on Repl.it](https://repl.it/badge/github/saharshxyz/brevis)](https://repl.it/github/saharshxyz/brevis)
 
 Telegram Bot to shorten urls with Kutt.it
 
