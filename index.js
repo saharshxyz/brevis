@@ -37,7 +37,7 @@ bot.start((ctx) =>
 );
 bot.help((ctx) => ctx.reply('Send me a link'));
 bot.on('sticker', (ctx) => ctx.reply('Please send me a link'));
-bot.hears('hi', async (ctx) => {
-  ctx.reply(await run('https://youtube.com'));
+bot.on('text', async (ctx) => {
+  ctx.reply(await run(ctx.message.text));
 });
 bot.launch();
