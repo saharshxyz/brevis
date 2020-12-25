@@ -1,7 +1,8 @@
 const fetch = require('node-fetch');
+const { Telegraf } = require('telegraf');
 require('dotenv').config();
 
-const { API_KEY, DOMAIN, REUSE } = process.env;
+const { API_KEY, DOMAIN, BOT_TOKEN } = process.env;
 
 // eslint-disable-next-line consistent-return
 const shorten = async (target) => {
@@ -10,7 +11,7 @@ const shorten = async (target) => {
       method: 'POST',
       body: JSON.stringify({
         target: target.toString(),
-        reuse: REUSE,
+        reuse: true,
         domain: DOMAIN,
       }),
       headers: {
@@ -18,14 +19,25 @@ const shorten = async (target) => {
         'X-API-KEY': API_KEY,
       },
     });
-    return (await response.json()).link;
+    return (await response.json()).link.toString().replace(/http:/, 'https:');
   } catch (error) {
     console.error(error);
   }
 };
 
 const run = async (longlink) => {
-  console.log(await shorten(longlink));
+  return shorten(longlink);
 };
 
-run('https://youtube.com');
+const bot = new Telegraf(BOT_TOKEN);
+bot.start((ctx) =>
+  ctx.reply(
+    'Welcome! I am ready to shorten links using Kutt. Send me your links to shorten them.'
+  )
+);
+bot.help((ctx) => ctx.reply('Send me a link'));
+bot.on('sticker', (ctx) => ctx.reply('Please send me a link'));
+bot.hears('hi', async (ctx) => {
+  ctx.reply(await run('https://youtube.com'));
+});
+bot.launch();
