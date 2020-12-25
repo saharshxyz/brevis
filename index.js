@@ -61,6 +61,7 @@ bot.on('message', async (ctx) => {
   // Check to see if it's a text message
   if (typeof ctx.message.text === 'undefined') {
     ctx.reply('Please send a link', Extra.inReplyTo(ctx.message.message_id));
+		return;
   }
 
   ctx.reply(
