@@ -1,10 +1,16 @@
-const fetch = require('node-fetch');
 const { Telegraf } = require('telegraf');
+const fetch = require('node-fetch');
+const express = require('express');
+
+const app = express();
 require('dotenv').config();
 
 const { API_KEY, DOMAIN, BOT_TOKEN, USERNAME } = process.env;
 
-// eslint-disable-next-line consistent-return
+// ----------
+// Shorten URL
+// ----------
+
 const shorten = async (target) => {
   try {
     const response = await fetch('https://kutt.it/api/v2/links', {
@@ -25,6 +31,10 @@ const shorten = async (target) => {
   }
 };
 
+// ----------
+// Telegram Bot
+// ----------
+
 const bot = new Telegraf(BOT_TOKEN);
 bot.start((ctx) =>
   ctx.reply(
@@ -35,6 +45,7 @@ bot.help((ctx) => ctx.reply('Send me a link'));
 bot.on('message', async (ctx) => {
   console.log(ctx.message);
 
+  // Check if it's an authorized user
   if (
     ctx.message.from.username !== USERNAME ||
     ctx.message.from.is_Bot === true
@@ -43,10 +54,33 @@ bot.on('message', async (ctx) => {
     return;
   }
 
+  // Check to see if it's a text message
   if (typeof ctx.message.text === 'undefined') {
     ctx.reply('Please send a link');
   }
 
-  ctx.reply(await shorten(ctx.message.text));
+  ctx.reply(await shorten(ctx.message.text)); // Respond with shortened link
 });
 bot.launch();
+
+// ----------
+// Express Server
+// ----------
+
+app.get('/ping', (req, res) => {
+  res.status(200).send("Hi! I'm awake");
+  console.log('🤖 Pinged');
+});
+
+app.listen(process.env.PORT || 3000, async () => {
+  try {
+    console.log('🟢 Starting express server');
+  } catch (err) {
+    console.error(err);
+    console.log('🚨 THERE WAS AN ERROR WITH THE EXPRESS SERVER');
+  }
+});
+
+process.on('SIGINT' || 'SIGTERM', () => {
+  console.log('🔴 Down');
+});
