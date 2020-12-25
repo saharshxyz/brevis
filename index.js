@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 const { Telegraf } = require('telegraf');
 require('dotenv').config();
 
-const { API_KEY, DOMAIN, BOT_TOKEN } = process.env;
+const { API_KEY, DOMAIN, BOT_TOKEN, USERNAME } = process.env;
 
 // eslint-disable-next-line consistent-return
 const shorten = async (target) => {
@@ -25,10 +25,6 @@ const shorten = async (target) => {
   }
 };
 
-const run = async (longlink) => {
-  return shorten(longlink);
-};
-
 const bot = new Telegraf(BOT_TOKEN);
 bot.start((ctx) =>
   ctx.reply(
@@ -36,8 +32,21 @@ bot.start((ctx) =>
   )
 );
 bot.help((ctx) => ctx.reply('Send me a link'));
-bot.on('sticker', (ctx) => ctx.reply('Please send me a link'));
-bot.on('text', async (ctx) => {
-  ctx.reply(await run(ctx.message.text));
+bot.on('message', async (ctx) => {
+  console.log(ctx.message);
+
+  if (
+    ctx.message.from.username !== USERNAME ||
+    ctx.message.from.is_Bot === true
+  ) {
+    ctx.reply('Not an authorized user');
+    return;
+  }
+
+  if (typeof ctx.message.text === 'undefined') {
+    ctx.reply('Please send a link');
+  }
+
+  ctx.reply(await shorten(ctx.message.text));
 });
 bot.launch();
