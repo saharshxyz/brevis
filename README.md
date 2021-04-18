@@ -10,4 +10,4 @@ Setup is super simple:
     2. `DOMAIN` is the domain to shorten to
     3. `BOT_TOKEN` is the token for the Telegram bot
     4. `USERNAME` is the Telegram username authorized to shorten links. 
-    5. `LOGGING_CHAT_ID` is the channel ID for logging messages to be sent to. Note: Beforee adding bot to logging channel, it's suggested that you go to BotFather, you enable groups for the bot and disable group privacy mode. Then, after adding the bot to the logging channel, disable groups and enable privacy mode.
+    5. `LOGGING_CHAT_ID` is the channel ID for logging messages to be sent to. Note: Before adding bot to logging channel, it's suggested that you go to BotFather, enable groups for the bot and disable group privacy mode. Then, after adding the bot to the logging channel, disable groups and enable privacy mode.
