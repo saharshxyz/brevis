@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const { API_KEY, DOMAIN, BOT_TOKEN, USERNAME, LOGGING_CHAT_ID } = process.env;
 
+// Configs for rate limiting
 const limitConfig = {
 	window: 1000,
 	limit: 1,
@@ -29,7 +30,7 @@ const shorten = async (target) => {
 				'X-API-KEY': API_KEY,
 			},
 		});
-		return (await response.json()).link.toString().replace(/http:/, 'https:');
+		return (await response.json()).link.toString().replace(/http:/, 'https:'); // Kutt will return with http://, replate that with https:// for security
 	} catch (error) {
 		console.error(error);
 	}
@@ -39,8 +40,8 @@ const shorten = async (target) => {
 // Telegram Bot
 // ----------
 
-const bot = new Telegraf(BOT_TOKEN);
-bot.use(rateLimit(limitConfig));
+const bot = new Telegraf(BOT_TOKEN); // Start telegraf bot
+bot.use(rateLimit(limitConfig)); // Set ratelimitting configs for bot
 bot.start((ctx) =>
 	ctx.reply(
 		'Welcome! I am ready to shorten links using Kutt. Send me your links to shorten them.'
@@ -48,7 +49,7 @@ bot.start((ctx) =>
 );
 bot.help((ctx) => ctx.reply('Send me a link'));
 
-const telegram = new Telegram(BOT_TOKEN);
+const telegram = new Telegram(BOT_TOKEN); // Start telegram bot with telegraf wrapper
 
 const log = (log) => {
 	// Logs to console and logging channel
