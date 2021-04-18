@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 
 require('dotenv').config();
 
-const { API_KEY, DOMAIN, BOT_TOKEN, USERNAME } = process.env;
+const { API_KEY, DOMAIN, BOT_TOKEN, USERNAME, LOGGING_CHAT_ID } = process.env;
 
 // ----------
 // Shorten URL
@@ -54,8 +54,11 @@ bot.on('message', async (ctx) => {
 		return;
 	}
 
-	if (typeof ctx.message.text === 'undefined') {
-		// Check to see if it's a text message
+	if (
+		typeof ctx.message.text === 'undefined' ||
+		typeof ctx.message.entities === 'undefined'
+	) {
+		// Check to see if it's a text message with a link
 		ctx.reply('Please send a link', {
 			reply_to_message_id: ctx.message.message_id,
 		});
@@ -66,4 +69,5 @@ bot.on('message', async (ctx) => {
 		});
 	}
 });
+
 bot.launch();
