@@ -1,9 +1,7 @@
 const { Telegraf } = require('telegraf');
 const fetch = require('node-fetch');
-const express = require('express');
 const Extra = require('telegraf/extra');
 
-const app = express();
 require('dotenv').config();
 
 const { API_KEY, DOMAIN, BOT_TOKEN, USERNAME } = process.env;
@@ -70,25 +68,3 @@ bot.on('message', async (ctx) => {
   }
 });
 bot.launch();
-
-// ----------
-// Express Server
-// ----------
-
-app.get('/ping', (req, res) => {
-  res.status(200).send("Hi! I'm awake");
-  console.log('🤖 Pinged');
-});
-
-app.listen(process.env.PORT || 3000, async () => {
-  try {
-    console.log('🟢 Starting express server');
-  } catch (err) {
-    console.error(err);
-    console.log('🚨 THERE WAS AN ERROR WITH THE EXPRESS SERVER');
-  }
-});
-
-process.on('SIGINT' || 'SIGTERM', () => {
-  console.log('🔴 Down');
-});
