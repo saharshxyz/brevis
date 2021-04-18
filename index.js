@@ -33,15 +33,26 @@ const shorten = async (target) => {
 // Telegram Bot
 // ----------
 
+const log = (log) => {
+	// Logs to console and logging channel
+	console.log(log);
+	fetch(
+		`https://api.telegram.org/bot1385381418:AAFj3F3O7BBe58qRgXJG7blLK26wPvct7QI/sendMessage?chat_id=-1001286844739&text=${JSON.stringify(
+			log
+		)}`
+	);
+};
+
 const bot = new Telegraf(BOT_TOKEN);
 bot.start((ctx) =>
 	ctx.reply(
 		'Welcome! I am ready to shorten links using Kutt. Send me your links to shorten them.'
 	)
 );
+log('🏁 Starting Bot');
 bot.help((ctx) => ctx.reply('Send me a link'));
 bot.on('message', async (ctx) => {
-	console.log(ctx.message);
+	log(ctx.message);
 
 	// Check if it's an authorized user
 	if (
@@ -51,6 +62,7 @@ bot.on('message', async (ctx) => {
 		ctx.reply('Not an authorized user', {
 			reply_to_message_id: ctx.message.message_id,
 		});
+		log('📛 Unauthorized User');
 		return;
 	}
 
@@ -62,11 +74,14 @@ bot.on('message', async (ctx) => {
 		ctx.reply('Please send a link', {
 			reply_to_message_id: ctx.message.message_id,
 		});
+		log('❌ Invalid Link');
 	} else {
 		// Respond with shortened link
-		ctx.reply(await shorten(ctx.message.text), {
+		const shortLink = await shorten(ctx.message.text);
+		ctx.reply(shortLink, {
 			reply_to_message_id: ctx.message.message_id,
 		});
+		log(`🟢 Shortened link: ${shortLink}`);
 	}
 });
 
