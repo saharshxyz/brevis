@@ -1,9 +1,15 @@
-const { Telegraf } = require('telegraf');
+const { Telegraf, Telegram } = require('telegraf');
+const rateLimit = require('telegraf-ratelimit');
 const fetch = require('node-fetch');
-
 require('dotenv').config();
 
 const { API_KEY, DOMAIN, BOT_TOKEN, USERNAME, LOGGING_CHAT_ID } = process.env;
+
+const limitConfig = {
+	window: 1000,
+	limit: 1,
+	onLimitExceeded: (ctx, next) => ctx.reply('Rate limit exceeded'),
+};
 
 // ----------
 // Shorten URL
@@ -33,24 +39,25 @@ const shorten = async (target) => {
 // Telegram Bot
 // ----------
 
-const log = (log) => {
-	// Logs to console and logging channel
-	console.log(log);
-	fetch(
-		`https://api.telegram.org/bot1385381418:AAFj3F3O7BBe58qRgXJG7blLK26wPvct7QI/sendMessage?chat_id=-1001286844739&text=${JSON.stringify(
-			log
-		)}`
-	);
-};
-
 const bot = new Telegraf(BOT_TOKEN);
+bot.use(rateLimit(limitConfig));
 bot.start((ctx) =>
 	ctx.reply(
 		'Welcome! I am ready to shorten links using Kutt. Send me your links to shorten them.'
 	)
 );
-log('🏁 Starting Bot');
 bot.help((ctx) => ctx.reply('Send me a link'));
+
+const telegram = new Telegram(BOT_TOKEN);
+
+const log = (log) => {
+	// Logs to console and logging channel
+	console.log(log);
+	telegram.sendMessage(LOGGING_CHAT_ID, log);
+};
+
+log('🏁 Starting Bot');
+
 bot.on('message', async (ctx) => {
 	log(ctx.message);
 
@@ -59,7 +66,7 @@ bot.on('message', async (ctx) => {
 		ctx.message.from.username !== USERNAME ||
 		ctx.message.from.is_Bot === true
 	) {
-		ctx.reply('Not an authorized user', {
+		ctx.reply('📛 Not an authorized user', {
 			reply_to_message_id: ctx.message.message_id,
 		});
 		log('📛 Unauthorized User');
@@ -71,7 +78,7 @@ bot.on('message', async (ctx) => {
 		typeof ctx.message.entities === 'undefined'
 	) {
 		// Check to see if it's a text message with a link
-		ctx.reply('Please send a link', {
+		ctx.reply('❌ Please send a link', {
 			reply_to_message_id: ctx.message.message_id,
 		});
 		log('❌ Invalid Link');
